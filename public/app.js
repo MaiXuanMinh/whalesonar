@@ -79,11 +79,11 @@ function pushRecent(rep) {
   renderRecent();
 }
 function renderRecent() {
-  $('#recent').innerHTML = getRecent().map((r) => `<span class="chip" data-a="${esc(r.address)}" data-c="${esc(r.chainId || '')}">${esc(r.symbol)} · ${esc(r.chain)}</span>`).join('');
+  $('#recent').innerHTML = getRecent().map((r) => `<span class="chip" data-a="${esc(r.address)}" data-c="${esc(r.chainId || '')}" data-s="${esc(r.symbol)}">${esc(r.symbol)} · ${esc(r.chain)}</span>`).join('');
 }
 $('#recent').onclick = (e) => {
   const c = e.target.closest('.chip');
-  if (c) analyzeAddress(c.dataset.a, c.dataset.c);
+  if (c) analyzeAddress(c.dataset.a, c.dataset.c, c.dataset.s);
 };
 renderRecent();
 
@@ -91,10 +91,11 @@ renderRecent();
 const isAddress = (s) => /^0x[0-9a-fA-F]{40}$/.test(s) || /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(s);
 const sg = { items: [], active: -1, timer: null, seq: 0 };
 
-function analyzeAddress(address, chain) {
-  $('#addr').value = address;
+// label: tên/mã token hiển thị trong ô tìm kiếm khi chọn theo tên (không hiện địa chỉ contract)
+function analyzeAddress(address, chain, label) {
+  $('#addr').value = label || address;
   syncClear();
-  state.query = { address, chain: chain || '' };
+  state.query = { address, chain: chain || '', label: label || '' };
   hideSuggest();
   run();
 }
@@ -178,22 +179,25 @@ function renderSuggest() {
 }
 function pickSuggest(i) {
   const t = sg.items[i];
-  if (t) analyzeAddress(t.address, t.chainId);
+  if (t) analyzeAddress(t.address, t.chainId, t.symbol);
 }
 function showSuggest() { $('#suggest').classList.remove('hidden'); $('#addr').setAttribute('aria-expanded', 'true'); }
 function hideSuggest() { $('#suggest').classList.add('hidden'); $('#addr').setAttribute('aria-expanded', 'false'); }
 
 // ---------- load ----------
 async function run(pair) {
-  const { address, chain } = state.query || {};
+  const { address, chain, label } = state.query || {};
   if (!address) return;
-  history.replaceState(null, '', '?' + new URLSearchParams(chain ? { a: address, c: chain } : { a: address }));
+  const params = { a: address };
+  if (chain) params.c = chain;
+  if (label) params.n = label;
+  history.replaceState(null, '', '?' + new URLSearchParams(params));
   show('loading');
   $('#goBtn').disabled = true;
   try {
     const data = await WS.analyze(address, { chain, pair });
     state.rep = data;
-    state.query = { address: data.token.address, chain: data.chain.id };
+    state.query = { address: data.token.address, chain: data.chain.id, label: state.query.label };
     state.tf = '1h';
     render();
     pushRecent(data);
@@ -644,5 +648,5 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 }
 
 // mở sẵn từ URL ?a=
-const pre = new URLSearchParams(location.search).get('a');
-if (pre) analyzeAddress(pre, new URLSearchParams(location.search).get('c'));
+const sp = new URLSearchParams(location.search);
+if (sp.get('a')) analyzeAddress(sp.get('a'), sp.get('c'), sp.get('n'));
