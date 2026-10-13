@@ -1,0 +1,8 @@
+{
+  "name": "whalesonar",
+  "version": "1.0.0",
+  "description": "WhaleSonar - soi token on-chain",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" }
+}

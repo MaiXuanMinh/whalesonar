@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WhaleSonar</title>
+  <meta name="description" content="Soi token on-chain: cá voi, holder, lượng mua bán, bảo mật contract." />
+  <meta name="theme-color" content="#0b1d3a" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" href="icons/icon-192.png" type="image/png" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><img class="logo" src="icons/icon-192.png" alt="" /><span>Whale<b>Sonar</b></span></div>
+    <form id="searchForm" class="search" autocomplete="off">
+      <div class="search-box">
+        <input id="addr" type="text" placeholder="Nhập mã token (VD: PEPE) hoặc dán địa chỉ contract…" spellcheck="false" required
+          role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggest" />
+        <div id="suggest" class="suggest hidden" role="listbox"></div>
+      </div>
+      <button type="submit" id="goBtn">Phân tích</button>
+    </form>
+    <button id="themeBtn" class="icon-btn" title="Đổi giao diện sáng/tối" aria-label="Đổi giao diện">◐</button>
+  </header>
+
+  <div id="recent" class="recent"></div>
+
+  <main id="app">
+    <section id="empty" class="empty">
+      <h1>Phân tích token on-chain</h1>
+      <p>Nhập mã token hoặc dán địa chỉ contract để xem giá, thanh khoản, top holder, tỷ lệ mua của ví lớn, lượng mua/bán theo khung thời gian, kiểm tra bảo mật contract và báo cáo đánh giá rủi ro.</p>
+      <p class="muted">Hỗ trợ Ethereum, BNB Chain, Base, Arbitrum, Polygon, Optimism, Avalanche, Solana, Tron, Linea, Blast, Sonic…</p>
+    </section>
+    <section id="loading" class="loading hidden"><div class="spinner"></div><p>Đang thu thập dữ liệu từ DexScreener, GoPlus, GeckoTerminal…</p></section>
+    <section id="error" class="error hidden"></section>
+    <section id="report" class="hidden"></section>
+  </main>
+
+  <footer class="foot">Dữ liệu: DexScreener · GoPlus Security · GeckoTerminal. Báo cáo chỉ mang tính tham khảo, không phải lời khuyên đầu tư.</footer>
+  <script src="core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
