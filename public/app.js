@@ -93,6 +93,7 @@ const sg = { items: [], active: -1, timer: null, seq: 0 };
 
 function analyzeAddress(address, chain) {
   $('#addr').value = address;
+  syncClear();
   state.query = { address, chain: chain || '' };
   hideSuggest();
   run();
@@ -108,7 +109,19 @@ function submitSearch() {
   searchSymbol(v, true);
 }
 
+// nút ✕: xoá sạch ô tìm kiếm chỉ với 1 lần bấm
+const syncClear = () => $('#clearBtn').classList.toggle('hidden', !$('#addr').value);
+$('#clearBtn').addEventListener('click', () => {
+  clearTimeout(sg.timer);
+  sg.items = []; sg.seq++;
+  $('#addr').value = '';
+  syncClear();
+  hideSuggest();
+  $('#addr').focus();
+});
+
 $('#addr').addEventListener('input', () => {
+  syncClear();
   const v = $('#addr').value.trim();
   clearTimeout(sg.timer);
   sg.items = []; sg.seq++;
