@@ -628,7 +628,19 @@ if (location.hostname === 'localhost') {
 
 // PWA: cho phép cài lên màn hình chính & mở nhanh khi mạng yếu
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  const hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register('sw.js').then((reg) => {
+    reg.update();
+    // mở lại app khi đang chạy nền → kiểm tra bản mới
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update(); });
+  }).catch(() => {});
+  // Có bản mới được cài → tải lại trang 1 lần để dùng ngay
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController || reloaded || state.rep) return;
+    reloaded = true;
+    location.reload();
+  });
 }
 
 // mở sẵn từ URL ?a=
